@@ -1,6 +1,6 @@
 ﻿/*global define */
-define(['plugins/http', 'jquery', 'common/httpServiceApiLinks', 'common/loadingMask/loadingMask', '../shell', '../services/logger', 'i18next'],
-    function (http, $, httpServiceApiLinks, loadingMask, shell, logger, i18next) {
+define(['plugins/http', 'jquery', 'config/httpServiceApiLinks', 'common/loadingMask/loadingMask', '../shell', 'services/logger', 'i18next'],
+    function (http, $, httpServiceApiLinks, loadingMask, shell, logger, i18n) {
         'use strict';
 
         var userInfoUrl = 'account/userinfo';

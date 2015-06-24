@@ -23,8 +23,6 @@ define(['toastr', 'jquery'],
         function log(options) {
             var opns = $.extend({}, defaults, options);
 
-            system.log(opns.source + ', ' + opns.type + ', ' + opns.message + ', ' + opns.data + ' ');
-
             if (opns.showToast) {
                 toastr[opns.type](opns.message, opns.title);
             }
