@@ -35,7 +35,7 @@ define(['plugins/http', 'jquery', 'config/httpServiceApiLinks', 'common/loadingM
         var downloadFile = function(url, method, data) {
             var authHeaderValue = getSecurityHeaders();//'Bearer' + this.token;
 
-            var promise = $.Deferred (function (defer) {
+            var deferred = $.Deferred (function (defer) {
                 var xmlhttp = new XMLHttpRequest();
                 xmlhttp.open(method, url, true);
                 xmlhttp.timeout = TIMEOUT;
@@ -80,11 +80,11 @@ define(['plugins/http', 'jquery', 'config/httpServiceApiLinks', 'common/loadingM
                 } else {
                     throw new Error("Unsuported method call!");
                 }
-
-                return xmlhttp;
             });
 
-            promise.fail(errorHandler.bind(this));
+            deferred.fail(errorHandler.bind(this));
+
+            return deferred;
         };
 
         var errorHandler = function errorHandler(response) {
