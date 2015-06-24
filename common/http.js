@@ -1,5 +1,5 @@
 ﻿/*global define */
-define(['plugins/http', 'jquery', 'config/httpServiceApiLinks', 'common/loadingMask/loadingMask', '../shell', 'services/logger', 'i18next'],
+define(['plugins/http', 'jquery', 'config/httpServiceApiLinks', 'common/loadingMask/loadingMask', '../shell', 'services/logger', 'i18n'],
     function (http, $, httpServiceApiLinks, loadingMask, shell, logger, i18n) {
         'use strict';
 
