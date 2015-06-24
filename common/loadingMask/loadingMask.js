@@ -1,5 +1,5 @@
 ﻿/*global define */
-define(['jquery', 'i18next'],
+define(['jquery', 'i18n'],
     function ($, i18next) {
     'use strict';
 
