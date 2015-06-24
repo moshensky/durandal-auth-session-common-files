@@ -161,7 +161,7 @@ define(['plugins/http', 'jquery', 'config/httpServiceApiLinks', 'common/loadingM
 
                 return req;
             },
-            postDownloadFile: function (url, data) {
+            postDownloadFile: function (url, data, host) {
                 loadingMask.show();
                 var requestUrl = getUrl(url, host);
                 var download = downloadFile(requestUrl, 'POST', data);
