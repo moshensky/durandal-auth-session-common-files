@@ -16,5 +16,9 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "main": "**/*.js",
+  "dependencies": {
+    "jquery": "~2.1.4"
+  }
 }
