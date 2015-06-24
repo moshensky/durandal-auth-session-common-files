@@ -28,25 +28,33 @@ define(['toastr', 'jquery'],
             }
         }
 
+        function sanitize(options, messageType) {
+            if (typeof options === 'string' || options instanceof String) {
+                return {
+                    message: options,
+                    type: messageType
+                };
+            }
+
+            options.type = messageType;
+            return options;
+        }
+
         init();
 
         return {
             log: log,
             warn: function (options) {
-                options.type = 'warning';
-                log(options);
+                log(sanitize(options, 'warning'));
             },
             info: function (options) {
-                options.type = 'info';
-                log(options);
+                log(sanitize(options, 'info'));
             },
             error: function (options) {
-                options.type = 'error';
-                log(options);
+                log(sanitize(options, 'error'));
             },
             success: function (options) {
-                options.type = 'success';
-                log(options);
+                log(sanitize(options, 'success'));
             }
         };
     });
