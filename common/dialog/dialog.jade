@@ -2,14 +2,8 @@ div.messageBox.modal-content(data-bind="style: {width: customWidth}")
     div.modal-header
         h3(data-bind="text: title")
     div.modal-body
-        //ko if: msg 
         span(data-bind="text: msg")
-        ///ko 
-        //ko ifnot: msg 
-        //ko compose: $data.model 
-        ///ko 
-        ///ko 
-        
+
     div.modal-footer
         button(data-bind="click: ok, text: okBtnText, css: okBtnClasses")
         button(data-bind="click: cancel, visible: (showCancelBtn === true), text: cancelBtnText, css: cancelBtnClasses")
