@@ -3,6 +3,7 @@ define(['plugins/http', 'jquery', 'config/httpServiceApiLinks', 'common/loadingM
     function (http, $, httpServiceApiLinks, loadingMask, shell, logger, i18n) {
         'use strict';
 
+        var TIMEOUT = 30000;
         var userInfoUrl = 'account/userinfo';
 
         var securityDomainLink = httpServiceApiLinks.security;
