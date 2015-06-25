@@ -1,37 +1,25 @@
-﻿/*global define */
+/*global define */
 define(['jquery', 'i18n'],
-    function ($, i18next) {
+    function ($, i18n) {
     'use strict';
 
     var loadingMask,
         dimScreen,
-        dialog;
+        dialog,
+        loadingTitle,
+        title;
 
     var createLoadingMask = (function () {
-        var title = i18next.t('app:loading');
-        dimScreen = '<div id="loadingMask" class="panel panel-default"><div class="panel-body"><i class="fa fa-spinner fa-spin fa-2x"></i><span data-i18n="app:loading" style="position: relative; top: -6px;">' + title + '</span></div></div>';
+        title = i18n.t('app:loading');
+        dimScreen = '<div id="loadingMask" class="spinner"><div class="loadingTitle">' + title +'</div><div class="loader"></div></div>';
         $('body').append(dimScreen);
-        loadingMask = $('#loadingMask').css({
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            opacity: '0.5',
-            backgroundColor: '#000',
-            display: 'none',
-            top: 0,
-            zIndex: 2000,
-            textAlign: 'center',
-            paddingTop: '20%',
-            fontSize: '25px'
-        });
-
-        dialog = $('#loadingMask div').css({
-            display: 'inline-block',
-            backgroundColor: '#fff',
-            padding: '20px',
-            borderRadius: '7px',
-            boxShadow: 'rgba(0, 0, 0, 0.498039) 0px 5px 15px 0px'
-        });
+         loadingMask = $('#loadingMask');
+         loadingTitle = $('.loadingTitle').css({
+            color: '#ffffff',
+            opacity: 1,
+            fontSize: '2.5em',
+            fontFamily: 'Roboto'
+         });
     }());
 
     return {
