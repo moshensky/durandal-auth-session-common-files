@@ -2,7 +2,13 @@ div.messageBox.modal-content(data-bind="style: {width: customWidth}")
     div.modal-header
         h3(data-bind="text: title")
     div.modal-body
+        //ko if: msg !== undefined
         span(data-bind="text: msg")
+        ///ko
+        //ko if: msg === undefined
+        //ko compose: model
+        ///ko
+        ///ko
 
     div.modal-footer
         button(data-bind="click: ok, text: okBtnText, css: okBtnClasses")

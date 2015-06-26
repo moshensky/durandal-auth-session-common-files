@@ -48,8 +48,29 @@ define(['plugins/dialog', 'knockout', 'i18n', 'jquery'],
             },
             _executeAction: function (status) {
                 var executeAction = true;
+                var executeActionPromise;
 
-                if (executeAction) {
+                if (typeof this.model.onDialogButtonClick === 'function') {
+                    executeAction = this.model.onDialogButtonClick(status);
+
+                    if (executeAction) {
+                        Dialog.close(this, this.model, status);
+                    }
+                } else if (typeof this.model.onDialogButtonClickSync === 'function') {
+                    var self = this;
+
+                    executeActionPromise = this.model.onDialogButtonClickSync(status);
+
+                    if (executeActionPromise !== undefined) {
+                        executeActionPromise.then(function (dialogResult) {
+                            if (dialogResult === i18n.t('app:yes')) {
+                                Dialog.close(self, self.model, status);
+                            }
+                        });
+                    } else {
+                        Dialog.close(this, this.model, status);
+                    }
+                } else {
                     Dialog.close(this, this.model, status);
                 }
             }
