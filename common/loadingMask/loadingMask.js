@@ -11,7 +11,7 @@ define(['jquery', 'i18n'],
 
     var createLoadingMask = (function () {
         title = i18n.t('app:loading');
-        dimScreen = '<div id="loadingMask" class="spinner"><div class="loadingTitle">' + title +'</div><div class="loader"></div></div>';
+        dimScreen = '<div id="loadingMask" class="spinner"><div class="loadingTitle">' + title +'</div><div class="mask"></div></div>';
         $('body').append(dimScreen);
          loadingMask = $('#loadingMask');
          loadingTitle = $('.loadingTitle').css({
