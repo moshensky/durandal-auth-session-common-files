@@ -68,7 +68,7 @@
       },
 
       isUserLoggedIn: function () {
-        return this.isLoggedIn === true;
+        return this.isLoggedIn() === true;
       },
 
       userRemembered: function () {
@@ -93,7 +93,7 @@
           return hash;
         }, {});
 
-        this.isLoggedIn = true;
+        this.isLoggedIn(true);
       },
 
       rememberedToken: function () {
