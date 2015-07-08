@@ -234,7 +234,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
             session.setUser({
               token: data.access_token,
               userName: data.userName || 'please give me a name!',
-              userClaims: convertToArray(data.userClaims),
+              userClaims: JSON.parse(data.userClaims || '[]'),
               userRoles: convertToArray(data.userRoles),
               userAccessRights: convertToArray(data.userAccessRights)
             });
@@ -252,3 +252,4 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
       }
     };
   });
+

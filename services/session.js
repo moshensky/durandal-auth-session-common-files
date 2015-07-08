@@ -97,7 +97,7 @@
       },
 
       rememberedToken: function () {
-        return JSON.parse(localStorage[constant.appData]).token;
+        return JSON.parse(localStorage[constant.appData] || '{}').token;
       },
 
       getUserName: function () {
@@ -107,3 +107,4 @@
 
     return new SessionModel();
   });
+
