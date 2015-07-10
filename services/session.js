@@ -8,6 +8,8 @@
     };
 
     var SessionModel = function SessionModel() {
+      this.isLoggedIn = ko.observable(false);
+      this.userName = ko.observable(undefined);
       this.initUserData();
 
       if (this.userRemembered()) {
@@ -18,12 +20,12 @@
     SessionModel.prototype = {
       initUserData: function () {
         this.userId = undefined;
-        this.userName = ko.observable(undefined);
+        this.userName(undefined);
         this.userClaims = [];
         this.userRoles = [];
         this.userAccessRights = [];
 
-        this.isLoggedIn = ko.observable(false);
+        this.isLoggedIn(false);
         this.isBusy = ko.observable(false);
       },
 
@@ -79,7 +81,7 @@
         var data = JSON.parse(localStorage[constant.appData]);
 
         this.userId = data.userId;
-        this.userName = data.userName;
+        this.userName(data.userName);
         this.userClaims = data.userClaims.reduce(function (hash, userClaim) {
           hash[userClaim.type] = userClaim.value;
           return hash;
