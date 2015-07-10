@@ -1,173 +1,110 @@
-﻿define(['plugins/router', 'knockout', 'jquery'],
-    function (router, ko, $) {
+﻿define(['knockout'],
+  function (ko) {
     'use strict';
 
-    $.arrayIntersect = function (array1, array2) {
-        return $.grep(array1, function (i) {
-            return $.inArray(i, array2) > -1;
-        });
-    };
-
+    // todo: read from config
     var constant = {
-        sessionStorageBackup: 'sessionStorageBackup',
-        accessToken: 'accessToken',
-        userRoles: 'userRoles',
-        userName: 'userName',
-        studentId: 'studentId',
-        studentFacultyNumber: 'studentFacultyNumber'
+      appData: 'app_data'
     };
-
-    function restoreSessionStorageFromLocalStorage() {
-        var backupText = localStorage[constant.sessionStorageBackup],
-            backup;
-
-        if (backupText) {
-            backup = JSON.parse(backupText);
-
-            for (var key in backup) {
-                if(backup.hasOwnProperty(key)) {
-                    sessionStorage[key] = backup[key];
-                }                
-            }
-
-            localStorage.removeItem(constant.sessionStorageBackup);
-        }
-    }
-
-    function setAccessToken(accessToken, persistent) {
-        if (persistent) {
-            localStorage[constant.accessToken] = accessToken;
-        } else {
-            sessionStorage[constant.accessToken] = accessToken;
-        }
-    }
 
     var SessionModel = function SessionModel() {
-        this.studentId = ko.observable(undefined);
-        this.studentFacultyNumber = ko.observable(undefined);
+      this.initUserData();
 
+      if (this.userRemembered()) {
+        this.restoreData();
+      }
+    };
+
+    SessionModel.prototype = {
+      initUserData: function () {
+        this.userId = undefined;
         this.userName = ko.observable(undefined);
-        this.email = ko.observable(undefined);
+        this.userClaims = [];
+        this.userRoles = [];
+        this.userAccessRights = [];
+
         this.isLoggedIn = ko.observable(false);
         this.isBusy = ko.observable(false);
-        this.userRoles = ko.observableArray();
+      },
 
-        restoreSessionStorageFromLocalStorage();
-    };
-    
-    SessionModel.prototype = {
-        setUser: function (user, remember) {
-            /*jshint camelcase: false */
+      setUser: function (data) {
+        if (data) {
+          localStorage[constant.appData] = JSON.stringify(data);
+          this.restoreData();
+        }
+      },
 
-            if (user) {
-                this.studentId(user.eStudentId);
-                this.studentFacultyNumber(user.eStudentFacultyNumber);
+      clearUser: function () {
+        localStorage.clear();
+        this.initUserData();
+      },
 
-                this.userName(user.userName);
-                this.email(user.email);
+      userHasAccessRight: function (requiredAccessRight) {
+        return this.userAccessRights[requiredAccessRight] === true;
+      },
 
-                if (user.hasOwnProperty('access_token')) {
-                    setAccessToken(user.access_token, remember);
-                } else if (user.hasOwnProperty(constant.accessToken)) {
-                    setAccessToken(user.access_token, remember);
-                }
+      userHasAllAccessRights: function (requiredAccessRights) {
+        return requiredAccessRights.every(function (accessRight) {
+          return this.userHasAccessRight(accessRight);
+        }, this);
+      },
 
-                //TODO: check logic flow! :)
-                //TODO: Fix! read from storrage!
-                if (user.userRoles !== undefined) {
-                    // persist
-                    if (remember) {
-                        localStorage[constant.userRoles] = user.userRoles;
-                        localStorage[constant.userName] = user.userName;
-                        localStorage[constant.studentId] = user.eStudentId;
-                        localStorage[constant.studentFacultyNumber] = user.eStudentFacultyNumber;
-                        //throw new Error('Unimplemented feautrue!!!');
-                    } else {
-                        sessionStorage[constant.userRoles] = user.userRoles;
-                        sessionStorage[constant.userName] = user.userName;
-                        sessionStorage[constant.studentId] = user.eStudentId;
-                        sessionStorage[constant.studentFacultyNumber] = user.eStudentFacultyNumber;
-                    }
+      userHasRole: function (requredRole) {
+        return this.userRoles[requredRole] === true;
+      },
 
-                    var roles = user.userRoles.split(',');
+      userHasAtLeastOneRole: function (requiredRoles) {
+        return requiredRoles.some(function (requiredRole) {
+          return this.userHasRole(requiredRole);
+        }, this);
+      },
 
-                    var self = this;
-                    $.each(roles, function (i, v) {
-                        self.userRoles.push(v);
-                    });
-                } else {
-                    throw new Error('User must have roles!');
-                }
+      userHasClaim: function (claimType) {
+        return this.userClaims[claimType] !== undefined;
+      },
 
-                this.isLoggedIn(true);                
-            }
-        },
-        clearUser: function () {
-            // clear access token
-            localStorage.removeItem(constant.accessToken);
-            sessionStorage.removeItem(constant.accessToken);
+      getUserClaim: function (claimType) {
+        return this.userClaims[claimType];
+      },
 
-            this.studentId('');
-            this.studentFacultyNumber('');
+      isUserLoggedIn: function () {
+        return this.isLoggedIn() === true;
+      },
 
-            this.userName('');
-            this.email('');
-            this.userRoles.removeAll();
-            this.isLoggedIn(false);
-        },
-        userIsInRole: function (requiredRole) {
-            if (requiredRole === undefined) {
-                return true;
-            } else if (this.userRoles() === undefined) {
-                return false;
-            } else {
-                if ($.isArray(requiredRole)) {
-                    if (requiredRole.length === 0) {
-                        return true;
-                    } else {
-                        return $.arrayIntersect(this.userRoles(), requiredRole).length > 0;
-                    }
-                } else {
-                    return $.inArray(requiredRole, this.userRoles()) > -1;
-                }
-            }                       
-        },
-        userRemembered: function () {
-            var isInSessionStorage = sessionStorage[constant.accessToken] !== undefined;
-            var isInLocalStorage = localStorage[constant.accessToken] !== undefined;
-            var result = isInSessionStorage || isInLocalStorage;
+      userRemembered: function () {
+        return localStorage[constant.appData] !== undefined;
+      },
 
-            return result;
-        },
-        restoreData: function () {
-            var userRoles = localStorage[constant.userRoles] || sessionStorage[constant.userRoles];
-            var roles = userRoles.split(',');
-            var self = this;
-            $.each(roles, function (i, v) {
-                self.userRoles.push(v);
-            });
+      restoreData: function () {
+        var data = JSON.parse(localStorage[constant.appData]);
 
-            this.isLoggedIn(true);
+        this.userId = data.userId;
+        this.userName = data.userName;
+        this.userClaims = data.userClaims.reduce(function (hash, userClaim) {
+          hash[userClaim.type] = userClaim.value;
+          return hash;
+        }, {});
+        this.userRoles = data.userRoles.reduce(function (hash, userRole) {
+          hash[userRole] = true;
+          return hash;
+        }, {});
+        this.userAccessRights = data.userAccessRights.reduce(function (hash, accessRight) {
+          hash[accessRight] = true;
+          return hash;
+        }, {});
 
-            this.studentId(localStorage[constant.studentId] || sessionStorage[constant.studentId]);
-            this.studentFacultyNumber(localStorage[constant.studentFacultyNumber] || sessionStorage[constant.studentFacultyNumber]);
-            this.userName(localStorage[constant.userName] || sessionStorage[constant.userName]);
-        },
-        rememberedToken: function () {
-            return sessionStorage[constant.accessToken] || localStorage[constant.accessToken];
-        },
-        archiveSessionStorageToLocalStorage: function () {
-            var backup = {};
+        this.isLoggedIn(true);
+      },
 
-            for (var i = 0; i < sessionStorage.length; i+=1) {
-                backup[sessionStorage.key(i)] = sessionStorage[sessionStorage.key(i)];
-            }
+      rememberedToken: function () {
+        return JSON.parse(localStorage[constant.appData] || '{}').token;
+      },
 
-            localStorage[constant.sessionStorageBackup] = JSON.stringify(backup);
-            sessionStorage.clear();
-        }      
+      getUserName: function () {
+        return this.userName;
+      }
     };
 
-    var session = new SessionModel();
-    return session;
-});
+    return new SessionModel();
+  });
+
