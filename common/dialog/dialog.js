@@ -62,8 +62,8 @@ define(['plugins/dialog', 'knockout', 'i18n', 'jquery'],
                     executeActionPromise = this.model.onDialogButtonClickSync(status);
 
                     if (executeActionPromise !== undefined) {
-                        executeActionPromise.then(function (dialogResult) {
-                            if (dialogResult === i18n.t('app:yes')) {
+                        executeActionPromise.then(function (allowDialogClose) {
+                            if (allowDialogClose === true) {
                                 Dialog.close(self, self.model, status);
                             }
                         });
