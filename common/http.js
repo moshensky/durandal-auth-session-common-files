@@ -10,6 +10,21 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
     var changePasswordUrl = securityDomainLink + 'api/Account/changePassword';
     var loginUrl = securityDomainLink + 'token';
     var logoutUrl = securityDomainLink + 'api/account/logout';
+    var requestsCount = 0;
+
+    var showLoadingMask = function () {
+      requestsCount += 1;
+      loadingMask.show();
+    }
+
+    var hideLoadingMask = function () {
+      requestsCount -= 1;
+      if (requestsCount === 0) {
+        loadingMask.hide();
+      } else if (requestsCount < 0){
+        throw new Exception("Ups... This should never happend! Fix it Luke!");
+      }
+    }
 
     var convertToArray = function (value) {
       var result = value || [];
@@ -123,37 +138,37 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
     return {
       post: function (url, data, host) {
         var headers = getSecurityHeaders();
-        loadingMask.show();
+        showLoadingMask();
         var requestUrl = getUrl(url, host);
         var req = http.post(requestUrl, data, headers);
         req.fail(proccessFailReq);
-        req.always(loadingMask.hide);
+        req.always(hideLoadingMask());
 
         return req;
       },
       get: function (url, data, host) {
         var headers = getSecurityHeaders();
-        loadingMask.show();
+        showLoadingMask();
         var requestUrl = getUrl(url, host);
         var req = http.get(requestUrl, data, headers);
         req.fail(proccessFailReq);
-        req.always(loadingMask.hide);
+        req.always(hideLoadingMask());
 
         return req;
       },
       put: function (url, data, host) {
         var headers = getSecurityHeaders();
-        loadingMask.show();
+        showLoadingMask();
         var requestUrl = getUrl(url, host);
         var req = http.put(requestUrl, data, headers);
         req.fail(proccessFailReq);
-        req.always(loadingMask.hide);
+        req.always(hideLoadingMask);
 
         return req;
       },
       remove: function (url, data, host) {
         var headers = getSecurityHeaders();
-        loadingMask.show();
+        showLoadingMask();
         var requestUrl = getUrl(url, host);
         var req = $.ajax({
           headers: headers,
@@ -165,39 +180,39 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
           data: JSON.stringify(data)
         });
         req.fail(proccessFailReq);
-        req.always(loadingMask.hide);
+        req.always(hideLoadingMask());
 
 
         return req;
       },
       postDownloadFile: function (url, data, host) {
-        loadingMask.show();
+        showLoadingMask();
         var requestUrl = getUrl(url, host);
         var download = downloadFile(requestUrl, 'POST', data);
-        loadingMask.hide();
+        hideLoadingMask();
         return download;
       },
       getDownloadFile: function (url, host) {
-        loadingMask.show();
+        showLoadingMask();
         var requestUrl = getUrl(url, host);
         var download = downloadFile(requestUrl, 'GET');
-        loadingMask.hide();
+        hideLoadingMask();
         return download;
       },
       getUserInfo: function () {
         var headers = getSecurityHeaders();
-        loadingMask.show();
+        showLoadingMask();
         var requestUrl = httpServiceApiLinks.root + userInfoUrl;
 
         return $.ajax(requestUrl, {
           cache: false,
           headers: headers
-        }).always(loadingMask.hide);
+        }).always(hideLoadingMask());
 
       },
       multipartFormPost: function (url, data, host) {
         var headers = getSecurityHeaders();
-        loadingMask.show();
+        showLoadingMask();
         var requestUrl = getUrl(url, host);
 
         var req = $.ajax({
@@ -208,26 +223,26 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
           type: 'POST',
           headers: headers
         });
-        req.always(loadingMask.hide);
+        req.always(hideLoadingMask());
         return req;
       },
       securityService: {
         changePassword: function changePassword(data) {
           var headers = this.getSecurityHeaders();
-          loadingMask.show();
+          showLoadingMask();
           return $.ajax(changePasswordUrl, {
             type: 'POST',
             data: data,
             headers: headers
-          }).always(loadingMask.hide());
+          }).always(hideLoadingMask());
         },
         login: function (data) {
-          loadingMask.show();
+          showLoadingMask();
 
           var req = $.ajax(loginUrl, {
             type: 'POST',
             data: data
-          }).always(loadingMask.hide);
+          }).always(hideLoadingMask());
           req.fail(proccessFailReq);
 
           return req.done(function (data) {
@@ -242,12 +257,12 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
         },
         logout: function logout() {
           var headers = this.getSecurityHeaders();
-          loadingMask.show();
+          showLoadingMask();
 
           return $.ajax(logoutUrl, {
             type: 'POST',
             headers: headers
-          }).always(loadingMask.hide);
+          }).always(hideLoadingMask());
         }
       }
     };
