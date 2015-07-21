@@ -11,18 +11,32 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
     var loginUrl = securityDomainLink + 'token';
     var logoutUrl = securityDomainLink + 'api/account/logout';
     var requestsCount = 0;
-
+    var _queryTimeout = undefined;
+    var loadingMaskDelay = 1000;
+   
+   
     var showLoadingMask = function () {
       requestsCount += 1;
-      loadingMask.show();
+      
+      if (requestsCount === 1) {
+        if (loadingMaskDelay > 0) {
+          _queryTimeout = window.setTimeout(function () {
+            loadingMask.show()
+          }, loadingMaskDelay);
+        } else {
+          loadingMask.show();
+        }
+      }
     }
 
     var hideLoadingMask = function () {
-      requestsCount -= 1;
-      if (requestsCount === 0) {
+      if (requestsCount <= 0) {
+        if (_queryTimeout) {
+          window.clearTimeout(_queryTimeout);
+        }
+  
         loadingMask.hide();
-      } else if (requestsCount < 0){
-        throw new Exception("Ups... This should never happend! Fix it Luke!");
+        requestsCount = 0;
       }
     }
 
