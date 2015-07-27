@@ -30,6 +30,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
     }
 
     var hideLoadingMask = function () {
+      requestsCount -= 1;
       if (requestsCount <= 0) {
         if (_queryTimeout) {
           window.clearTimeout(_queryTimeout);
