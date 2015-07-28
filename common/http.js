@@ -12,34 +12,45 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
     var logoutUrl = securityDomainLink + 'api/account/logout';
     var requestsCount = 0;
     var _queryTimeout = undefined;
-    var loadingMaskDelay = 1000;
-   
-   
+    var loadingMaskDelay = 700;
+    var resetLoadingMaskTimer;
+
+
     var showLoadingMask = function () {
       requestsCount += 1;
-      
+
       if (requestsCount === 1) {
         if (loadingMaskDelay > 0) {
           _queryTimeout = window.setTimeout(function () {
-            loadingMask.show()
+            if (requestsCount > 0) {
+              loadingMask.show()
+            }
           }, loadingMaskDelay);
         } else {
           loadingMask.show();
         }
       }
-    }
+    };
+
+    var resetLoadingMask = function () {
+      if (_queryTimeout) {
+        window.clearTimeout(_queryTimeout);
+      }
+
+      loadingMask.hide();
+      requestsCount = 0;
+    };
 
     var hideLoadingMask = function () {
       requestsCount -= 1;
       if (requestsCount <= 0) {
-        if (_queryTimeout) {
-          window.clearTimeout(_queryTimeout);
+        if (resetLoadingMaskTimer) {
+          window.clearTimeout(resetLoadingMaskTimer);
         }
-  
-        loadingMask.hide();
-        requestsCount = 0;
+
+        resetLoadingMaskTimer = window.setTimeout(resetLoadingMask, 0);
       }
-    }
+    };
 
     var convertToArray = function (value) {
       var result = value || [];
@@ -48,7 +59,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
       }
 
       return result;
-    }
+    };
 
     var getSecurityHeaders = function () {
       var accessToken = session.rememberedToken();
@@ -63,10 +74,10 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
 
     var proccessFailReq = function (jqXHR, textStatus, errorThrown) {
       if (jqXHR.status === 401) {
-        logger.warn({message: i18n.t('app:yourSessionTimedOut')});
+        logger.warn({ message: i18n.t('app:yourSessionTimedOut') });
         shell.logout();
       } else if (jqXHR.status === 403) {
-        logger.warn({message: i18n.t('app:accessDenied')});
+        logger.warn({ message: i18n.t('app:accessDenied') });
       }
     };
 
@@ -83,7 +94,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
 
         xmlhttp.onload = function (oEvent) {
           if (this.status !== 200) {
-            defer.reject({statusCode: this.status});
+            defer.reject({ statusCode: this.status });
             return;
           }
 
@@ -102,7 +113,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
         };
 
         xmlhttp.ontimeout = function () {
-          defer.reject({timeout: true})
+          defer.reject({ timeout: true })
         };
 
         xmlhttp.addEventListener("error", function () {
@@ -127,13 +138,13 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
 
     var errorHandler = function errorHandler(response) {
       if (response.statusCode === 401) {
-        logger.warn({message: i18n.t('common.sessionTimedOut')});
+        logger.warn({ message: i18n.t('common.sessionTimedOut') });
       } else if (response.statusCode === 403) {
-        logger.warn({message: i18n.t('common.accessDenied')});
+        logger.warn({ message: i18n.t('common.accessDenied') });
       } else if (response.statusCode === 500) {
-        logger.error({message: i18n.t('common.internalServerError')});
+        logger.error({ message: i18n.t('common.internalServerError') });
       } else if (response.timeout === true) {
-        logger.error({message: i18n.t('common.requestTimeout')});
+        logger.error({ message: i18n.t('common.requestTimeout') });
       } else {
         logger.error('TODO: Implement ajax fails!');
       }
