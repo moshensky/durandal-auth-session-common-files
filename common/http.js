@@ -12,7 +12,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
     var logoutUrl = securityDomainLink + 'api/account/logout';
     var requestsCount = 0;
     var _queryTimeout = undefined;
-    var loadingMaskDelay = 700;
+    var loadingMaskDelay = 200;
     var resetLoadingMaskTimer;
 
 
@@ -33,12 +33,14 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
     };
 
     var resetLoadingMask = function () {
-      if (_queryTimeout) {
-        window.clearTimeout(_queryTimeout);
+      if (requestsCount <= 0) {
+        if (_queryTimeout) {
+          window.clearTimeout(_queryTimeout);
+        }
+  
+        loadingMask.hide();
+        requestsCount = 0;
       }
-
-      loadingMask.hide();
-      requestsCount = 0;
     };
 
     var hideLoadingMask = function () {
