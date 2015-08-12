@@ -8,8 +8,8 @@ define([], function (moment) {
       return 0;
     }
 
-    a = as.toLowerCase().match(rx);
-    b = bs.toLowerCase().match(rx);
+    a = as.toLowerCase().match(rx) || {};
+    b = bs.toLowerCase().match(rx) || {};
     l = a.length;
     while (i < l) {
       if (!b[i]) return 1;
