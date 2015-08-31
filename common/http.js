@@ -1,4 +1,5 @@
 ﻿/*global define */
+/*D*/
 define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLinks', 'common/loadingMask/loadingMask', '../shell', 'services/logger', 'i18n'],
   function (session, http, $, httpServiceApiLinks, loadingMask, shell, logger, i18n) {
     'use strict';
@@ -147,7 +148,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
         var requestUrl = getUrl(url, host);
         var req = http.post(requestUrl, data, headers);
         req.fail(proccessFailReq);
-        req.always(hideLoadingMask());
+        req.always(hideLoadingMask);
 
         return req;
       },
@@ -157,7 +158,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
         var requestUrl = getUrl(url, host);
         var req = http.get(requestUrl, data, headers);
         req.fail(proccessFailReq);
-        req.always(hideLoadingMask());
+        req.always(hideLoadingMask);
 
         return req;
       },
@@ -185,7 +186,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
           data: JSON.stringify(data)
         });
         req.fail(proccessFailReq);
-        req.always(hideLoadingMask());
+        req.always(hideLoadingMask);
 
 
         return req;
@@ -212,7 +213,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
         return $.ajax(requestUrl, {
           cache: false,
           headers: headers
-        }).always(hideLoadingMask());
+        }).always(hideLoadingMask);
 
       },
       multipartFormPost: function (url, data, host) {
@@ -228,7 +229,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
           type: 'POST',
           headers: headers
         });
-        req.always(hideLoadingMask());
+        req.always(hideLoadingMask);
         return req;
       },
       securityService: {
@@ -239,7 +240,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
             type: 'POST',
             data: data,
             headers: headers
-          }).always(hideLoadingMask());
+          }).always(hideLoadingMask);
         },
         login: function (data) {
           showLoadingMask();
@@ -247,7 +248,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
           var req = $.ajax(loginUrl, {
             type: 'POST',
             data: data
-          }).always(hideLoadingMask());
+          }).always(hideLoadingMask);
           req.fail(proccessFailReq);
 
           return req.done(function (data) {
@@ -267,9 +268,8 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
           return $.ajax(logoutUrl, {
             type: 'POST',
             headers: headers
-          }).always(hideLoadingMask());
+          }).always(hideLoadingMask);
         }
       }
     };
   });
-
