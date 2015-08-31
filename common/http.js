@@ -20,14 +20,37 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
       requestsCount += 1;
 
       if (requestsCount === 1) {
-        loadingMask.show();
+        if (loadingMaskDelay > 0) {
+          _queryTimeout = window.setTimeout(function () {
+            if (requestsCount > 0) {
+              loadingMask.show()
+            }
+          }, loadingMaskDelay);
+        } else {
+          loadingMask.show();
+        }
+      }
+    };
+
+    var resetLoadingMask = function () {
+      if (requestsCount <= 0) {
+        if (_queryTimeout) {
+          window.clearTimeout(_queryTimeout);
+        }
+  
+        loadingMask.hide();
+        requestsCount = 0;
       }
     };
 
     var hideLoadingMask = function () {
       requestsCount -= 1;
       if (requestsCount <= 0) {
-        loadingMask.hide();
+        if (resetLoadingMaskTimer) {
+          window.clearTimeout(resetLoadingMaskTimer);
+        }
+
+        resetLoadingMaskTimer = window.setTimeout(resetLoadingMask, 0);
       }
     };
 
