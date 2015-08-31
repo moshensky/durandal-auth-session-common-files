@@ -1,5 +1,4 @@
 ﻿/*global define */
-/*D*/
 define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLinks', 'common/loadingMask/loadingMask', '../shell', 'services/logger', 'i18n'],
   function (session, http, $, httpServiceApiLinks, loadingMask, shell, logger, i18n) {
     'use strict';
