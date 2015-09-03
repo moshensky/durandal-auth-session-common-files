@@ -2,14 +2,6 @@ define(['plugins/dialog', 'knockout', 'i18n', 'jquery'],
     function (Dialog, ko, i18n, $) {
         'use strict';
 
-        //prevents user interaction with keyboard
-        $(window).keydown(function (event) {
-            if (event.keyCode === 13) {
-                event.preventDefault();
-                return false;
-            }
-        });
-
         var CustomDialog = function (opts) {
             this.title = opts.title;
             this.msg = opts.msg;
