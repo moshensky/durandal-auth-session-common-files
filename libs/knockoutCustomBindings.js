@@ -2,6 +2,18 @@
 define(['knockout', 'jquery'],
     function (ko, $) {
         'use strict';
+        
+        ko.bindingHandlers.hover = {
+            init: function (element, valueAccessor) {
+                var value = valueAccessor();
+                ko.applyBindingsToNode(element, {
+                    event: {
+                        mouseenter: function () { value(true) },
+                        mouseleave: function () { value(false) }
+                    }
+                });
+            }
+        };
 
         var windowURL = window.URL || window.webkitURL;
         ko.bindingHandlers.file = {
