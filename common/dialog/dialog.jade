@@ -1,17 +1,19 @@
 div.messageBox.modal-content(data-bind="style: {width: customWidth}")
-    div.modal-header
-        h3(data-bind="text: title")
-    div.modal-body
-        //ko if: msg !== undefined
-        span(data-bind="text: msg")
-        ///ko
-        //ko if: msg === undefined
-        //ko compose: model
-        ///ko
-        ///ko
+  div.modal-header
+    h3(data-bind="text: title")
+    button.btn.btn-default(data-bind="click: cancel, visible: (showCancelBtn === true)" style="position: absolute; top: 5px; right: 5px;")
+      i(class="fa fa-times fa-sm")
+  div.modal-body
+    //ko if: msg !== undefined
+    span(data-bind="text: msg")
+    ///ko
+    //ko if: msg === undefined
+    //ko compose: model
+    ///ko
+    ///ko
 
-    div.modal-footer
-        button(data-bind="click: ok, text: okBtnText, css: okBtnClasses")
-        button(data-bind="click: cancel, visible: (showCancelBtn === true), text: cancelBtnText, css: cancelBtnClasses")
-        button(data-bind="click: third, visible: (showThirdBtn === true), text: thirdBtnText, css: thirdBtnClasses")
-        div(style="clear:both;")
+  div.modal-footer
+    button(data-bind="click: ok, html: okBtnText, css: okBtnClasses")
+    button(data-bind="click: third, visible: (showThirdBtn === true), html: thirdBtnText, css: thirdBtnClasses")
+    button(data-bind="click: cancel, visible: (showCancelBtn === true), html: cancelBtnText, css: cancelBtnClasses")
+    div(style="clear:both;")
