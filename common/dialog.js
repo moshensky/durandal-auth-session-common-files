@@ -11,7 +11,9 @@
                 var dialog = new Dialog({
                     title: opts.title || '',
                     msg: opts.msg,
-                    showCancelBtn: true,
+                    okBtnText: opts.okBtnText,
+                    okBtnClasses: opts.okBtnClasses,
+                    showCancelBtn: true,                    
                     cancelBtnText: opts.cancelBtnText
                 });
 
