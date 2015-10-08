@@ -141,6 +141,8 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
     var errorHandler = function errorHandler(response) {
       if (response.statusCode === 401) {
         logger.warn({ message: i18n.t('common.sessionTimedOut') });
+        session.clearUser();
+        window.location.reload();
       } else if (response.statusCode === 403) {
         logger.warn({ message: i18n.t('common.accessDenied') });
       } else if (response.statusCode === 500) {
