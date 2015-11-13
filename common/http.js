@@ -254,6 +254,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
           return req.done(function (data) {
             session.setUser({
               token: data.access_token,
+              userId: data.userId,
               userName: data.userName || 'please give me a name!',
               userClaims: JSON.parse(data.userClaims || '[]'),
               userRoles: convertToArray(data.userRoles),
