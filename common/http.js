@@ -1,4 +1,31 @@
-﻿/*global define */
+/*global define */
+
+if (typeof Object.assign != 'function') {
+  Object.assign = function (target, varArgs) { // .length of function is 2
+    'use strict';
+    if (target == null) { // TypeError if undefined or null
+      throw new TypeError('Cannot convert undefined or null to object');
+    }
+
+    var to = Object(target);
+
+    for (var index = 1; index < arguments.length; index++) {
+      var nextSource = arguments[index];
+
+      if (nextSource != null) { // Skip over if undefined or null
+        for (var nextKey in nextSource) {
+          // Avoid bugs when hasOwnProperty is shadowed
+          if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+            to[nextKey] = nextSource[nextKey];
+          }
+        }
+      }
+    }
+    return to;
+  };
+}
+
+
 define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLinks', 'common/loadingMask/loadingMask', '../shell', 'services/logger', 'i18n'],
   function (session, http, $, httpServiceApiLinks, loadingMask, shell, logger, i18n) {
     'use strict';
@@ -37,7 +64,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
         if (_queryTimeout) {
           window.clearTimeout(_queryTimeout);
         }
-  
+
         loadingMask.hide();
         requestsCount = 0;
       }
@@ -84,7 +111,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
     };
 
     var downloadFile = function (url, method, data) {
-      var authHeaderValue = getSecurityHeaders();//'Bearer' + this.token;
+      var authHeaderValue = getAllHeaders();//'Bearer' + this.token;
 
       var deferred = $.Deferred(function (defer) {
         var xmlhttp = new XMLHttpRequest();
@@ -165,9 +192,23 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
       return requestUrl;
     }
 
+    var getLocaleHeader = function () {
+      if (httpServiceApiLinks.getLocaleHeader) {
+        return httpServiceApiLinks.getLocaleHeader();
+      }
+    }
+
+    var getAllHeaders = function () {
+      if (httpServiceApiLinks.getLocaleHeader) {
+        return Object.assign(getSecurityHeaders(), httpServiceApiLinks.getLocaleHeader());
+      }
+
+      return getSecurityHeaders();
+    }
+
     return {
       post: function (url, data, host) {
-        var headers = getSecurityHeaders();
+        var headers = getAllHeaders();
         showLoadingMask();
         var requestUrl = getUrl(url, host);
         var req = http.post(requestUrl, data, headers);
@@ -177,7 +218,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
         return req;
       },
       get: function (url, data, host) {
-        var headers = getSecurityHeaders();
+        var headers = getAllHeaders();
         showLoadingMask();
         var requestUrl = getUrl(url, host);
         var req = http.get(requestUrl, data, headers);
@@ -187,7 +228,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
         return req;
       },
       put: function (url, data, host) {
-        var headers = getSecurityHeaders();
+        var headers = getAllHeaders();
         showLoadingMask();
         var requestUrl = getUrl(url, host);
         var req = http.put(requestUrl, data, headers);
@@ -197,11 +238,10 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
         return req;
       },
       remove: function (url, data, host) {
-        var headers = getSecurityHeaders();
         showLoadingMask();
         var requestUrl = getUrl(url, host);
         var req = $.ajax({
-          headers: headers,
+          headers: getAllHeaders(),
           type: 'DELETE',
           url: requestUrl,
           contentType: 'application/json',
@@ -230,18 +270,16 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
         return download;
       },
       getUserInfo: function () {
-        var headers = getSecurityHeaders();
         showLoadingMask();
         var requestUrl = httpServiceApiLinks.root + userInfoUrl;
 
         return $.ajax(requestUrl, {
           cache: false,
-          headers: headers
+          headers: getAllHeaders()
         }).always(hideLoadingMask);
 
       },
       multipartFormPost: function (url, data, host) {
-        var headers = getSecurityHeaders();
         showLoadingMask();
         var requestUrl = getUrl(url, host);
 
@@ -251,27 +289,26 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
           processData: false,
           contentType: false,
           type: 'POST',
-          headers: headers
+          headers: getAllHeaders()
         });
         req.always(hideLoadingMask);
         return req;
       },
       securityService: {
         changePassword: function changePassword(data) {
-          var headers = this.getSecurityHeaders();
           showLoadingMask();
           return $.ajax(changePasswordUrl, {
             type: 'POST',
             data: data,
-            headers: headers
+            headers: getAllHeaders()
           }).always(hideLoadingMask);
         },
         login: function (data) {
           showLoadingMask();
-
           var req = $.ajax(loginUrl, {
             type: 'POST',
-            data: data
+            data: data,
+            headers: getLocaleHeader()
           }).always(hideLoadingMask);
           req.fail(proccessFailReq);
 
@@ -286,12 +323,11 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
           });
         },
         logout: function logout() {
-          var headers = this.getSecurityHeaders();
           showLoadingMask();
 
           return $.ajax(logoutUrl, {
             type: 'POST',
-            headers: headers
+            headers: getAllHeaders()
           }).always(hideLoadingMask);
         }
       }
