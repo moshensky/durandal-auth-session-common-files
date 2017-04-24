@@ -131,6 +131,7 @@ define(['services/session', 'plugins/http', 'jquery', 'config/httpServiceApiLink
           var windowUrl = window.URL || window.webkitURL;
           var url = windowUrl.createObjectURL(blob);
           var filename = this.getResponseHeader('Content-Disposition').match(/^attachment; filename=(.+)/)[1];
+          filename = decodeURIComponent(filename);
 
           var anchor = $('<a></a>');
           anchor.prop('href', url);
